@@ -3,10 +3,26 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+import math
 
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
+
+
+def paginate_questions(request, selection):
+    page = request.args.get("page", 1, type=int)
+    max_page = math.ceil(len(selection)/QUESTIONS_PER_PAGE)
+    page = min(max_page, page)
+    start = (page - 1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+    # or end = page * QUESTIONS_PER_PAGE
+
+    questions = [question.format() for question in selection]
+    current_questions = questions[start:end]
+
+    return current_questions
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -41,6 +57,15 @@ def create_app(test_config=None):
     for all available categories.
     """
 
+    @app.route('/categories', methods=['GET'])
+    def get_categories():
+        categories = Category.query.all()
+        formatted_categories = [category.format() for category in categories]
+
+        return jsonify({
+            "success": True,
+            "categories": formatted_categories
+        })
 
     """
     @TODO:
@@ -54,6 +79,20 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
+
+    @app.route('/questions', methods=['GET'])
+    def get_paginated_questions():
+        questions = Question.query.order_by(Question.id).all()
+        current_questions = paginate_questions(request, questions)
+        max_page = math.ceil(len(questions)/QUESTIONS_PER_PAGE)
+
+        return jsonify({
+            "success": True,
+            "current questions": current_questions,
+            "total questions": len(Question.query.all()),
+            "page": request.args.get('page'),
+            "max_page": max_page
+        })
 
     """
     @TODO:
@@ -113,4 +152,3 @@ def create_app(test_config=None):
     """
 
     return app
-
