@@ -86,14 +86,26 @@ def create_app(test_config=None):
         questions = Question.query.order_by(Question.id).all()
         current_questions = paginate_questions(request, questions)
         max_page = math.ceil(len(questions)/QUESTIONS_PER_PAGE)
+        categories = Category.query.all()
+        # why does category.id have to have a value of category_type?@ayinda, I'm thinking its cos we want to say that a particular refers to a particular category type
+        formatted_categories = {
+            category.id: category.type for category in categories}
 
         return jsonify({
             "success": True,
-            "current questions": current_questions,
-            "total questions": len(Question.query.all()),
+            "questions": current_questions,
+            "total_questions": len(Question.query.all()),
+            "categories": formatted_categories,
+            "current_category": None,
             "page": request.args.get('page'),
-            "max_page": max_page
+            "max_page": max_page,
+
         })
+    # endpoint is /questions?page=1
+    # questions: result.questions,
+    # totalQuestions: result.total_questions,
+    # categories: result.categories,
+    # currentCategory: result.current_category,
 
     """
     @TODO:
