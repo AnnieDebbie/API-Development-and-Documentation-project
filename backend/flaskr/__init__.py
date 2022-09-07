@@ -60,11 +60,12 @@ def create_app(test_config=None):
     @app.route('/categories', methods=['GET'])
     def get_categories():
         categories = Category.query.all()
-        formatted_categories = [category.format() for category in categories]
+        formatted_categories = {
+            category.id: category.type for category in categories}
 
         return jsonify({
             "success": True,
-            "categories": formatted_categories
+            "categories": formatted_categories,
         })
 
     """
