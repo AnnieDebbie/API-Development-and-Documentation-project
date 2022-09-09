@@ -64,7 +64,25 @@ class TriviaTestCase(unittest.TestCase):
     def test_404_sent_requesting_beyond_valid_page(self):
         response = self.client().get('/questions')
 
+    def test_delete_a_question(self):
+        response = self.client().get('/questions/3')
+        data = json.loads(response.data)
+
+        question = Question.query.filter(Question.id == 3).one_or_none()
+
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["deleted"], 3)
+        self.assertIsNone(question)
+        self.assertIsNotNone(data["current_questions"])
+        self.assertIsNotNone(data["total_questions"])
     
+    def test_422_if_question_does_not_exist(self):
+        response = self.client().delete("/questions/100")
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "unprocessable")
 
 
 
