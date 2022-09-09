@@ -18,6 +18,8 @@ class TriviaTestCase(unittest.TestCase):
         self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
+        self.new_question = {"question": "When did Nigeria gain independence",
+                             "answer": "1,October 1960", "difficulty": 5, "category": 4}
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -50,7 +52,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['error'], 404)
         self.assertEqual(data['message'], 'resource not found')
-    
+
     def test_get_paginated_questions(self):
         response = self.client().get('/questions')
         data = json.loads(response.data)
@@ -75,7 +77,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIsNone(question)
         self.assertIsNotNone(data["current_questions"])
         self.assertIsNotNone(data["total_questions"])
-    
+
     def test_422_if_question_does_not_exist(self):
         response = self.client().delete("/questions/100")
         data = json.loads(response.data)
@@ -84,7 +86,61 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "unprocessable")
 
+    def test_create_new_question(self):
+        response = self.client().post('/questions', json=self.new_question)
+        data = json.loads(response.data)
 
+        self.assertEqual("success", True)
+        self.assertTrue(data["created"])
+
+        # "success": True,
+        #             "question": new_question,
+        #             "answer": new_answer,
+        #             "difficulty": new_difficulty,
+        #             "category": new_category,
+        #             "created": question.id,
+        #             "questions": current_questions,
+        #             "total_books": len(Question.query.all()),
+
+    def test_405_if_question_creation_not_allowed(self):
+        response = self.client().post("/questions/45", json=self.new_question)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "method not allowed")
+
+    def test_search_question(self):
+        response = self.client().post(
+            "/questions", json={"search_term": "Nigeria"})
+        data = json.loads(response.data)
+
+        self.assertEqual("success", True)
+        self.assertTrue(data["total_questions"])
+        self.assertEqual(len(data["questions"]), 1)
+
+    def test_get_book_search_without_results(self):
+        response = self.client().post(
+            "/questions", json={"search_term": "skrrrskrr"})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["total_questions"], 0)
+        self.assertEqual(len(data["questions"]), 0)
+
+    def test_get_question_by_category(self):
+        response = self.client().get(
+            "/categories/2/questions")
+        data = json.loads(response.data)
+        category_questions = Question.query.filter(
+            Question.category == 2).all()
+
+        self.assertEqual("success", True)
+        self.assertEqual(data["category_questions"], category_questions)
+        self.assertEqual(data["total_questions"], 5)
+    
+    
 
 
 # Make the tests conveniently executable
