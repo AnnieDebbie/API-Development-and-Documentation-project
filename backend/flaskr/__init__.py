@@ -1,6 +1,8 @@
 import os
+from re import search
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_, func
 from flask_cors import CORS
 import random
 import math
@@ -243,6 +245,22 @@ def create_app(test_config=None):
     and shown whether they were correct or not.
     """
 
+    @app.route('/quizzes', methods=['POST'])
+    def randomize_next_question():
+        body = request.get_json()
+        previous_questions = body.get("previous_questions")
+        quiz_category = body.get("quiz_category")
+        random_question = Question.query.filter(and_(
+            Question.id.notin_(previous_questions),
+            quiz_category == Question.category
+        )).order_by(func.random()).first()
+
+        return jsonify({
+            "success": True,
+            "question": random_question,
+
+        })
+        # (and_(Question.question notin_(previous_questions)), )
     """
     @TODO:
     Create error handlers for all expected errors
