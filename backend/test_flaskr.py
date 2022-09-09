@@ -50,6 +50,21 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['error'], 404)
         self.assertEqual(data['message'], 'resource not found')
+    
+    def test_get_paginated_questions(self):
+        response = self.client().get('/questions')
+        data = json.loads(response.data)
+
+        self.assertEqual("success", True)
+        self.assertIsNotNone(data["questions"])
+        self.assertIsNotNone(data["total_questions"])
+        self.assertIsNotNone(data["categories"])
+        self.assertEqual(data['current_category'], '')
+
+    def test_404_sent_requesting_beyond_valid_page(self):
+        response = self.client().get('/questions')
+
+    
 
 
 
