@@ -65,6 +65,9 @@ def create_app(test_config=None):
         formatted_categories = {
             category.id: category.type for category in categories}
 
+        if len(formatted_categories) == 0:
+            abort(404)
+
         return jsonify({
             "success": True,
             "categories": formatted_categories,
@@ -89,25 +92,22 @@ def create_app(test_config=None):
         current_questions = paginate_questions(request, questions)
         max_page = math.ceil(len(questions)/QUESTIONS_PER_PAGE)
         categories = Category.query.all()
-        # why does category.id have to have a value of category_type?@ayinda, I'm thinking its cos we want to say that a particular refers to a particular category type
         formatted_categories = {
             category.id: category.type for category in categories}
+        
+        if len(formatted_categories and current_questions) == 0:
+            abort(404)
 
         return jsonify({
             "success": True,
             "questions": current_questions,
             "total_questions": len(Question.query.all()),
             "categories": formatted_categories,
-            "current_category": None,
+            "current_category": '',
             "page": request.args.get('page'),
             "max_page": max_page,
 
         })
-    # endpoint is /questions?page=1
-    # questions: result.questions,
-    # totalQuestions: result.total_questions,
-    # categories: result.categories,
-    # currentCategory: result.current_category,
 
     """
     @TODO:
@@ -279,7 +279,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 404,
-            "message": "Resource not found",
+            "message": "resource not found",
         }), 404
 
     @app.errorhandler(405)
