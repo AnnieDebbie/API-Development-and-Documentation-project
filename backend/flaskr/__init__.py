@@ -93,7 +93,7 @@ def create_app(test_config=None):
         formatted_categories = {
             category.id: category.type for category in categories}
 
-        if len(formatted_categories and current_questions) == 0:
+        if len(current_questions) == 0:
             abort(404)
 
         return jsonify({
@@ -176,7 +176,8 @@ def create_app(test_config=None):
             abort(422)
 
     """
-    @TODO:
+    @TODO:    Create a POST endpoint to get questions based on a search term.
+
     Create a POST endpoint to get questions based on a search term.
     It should return any questions for whom the search term
     is a substring of the question.
@@ -188,13 +189,12 @@ def create_app(test_config=None):
     @app.route('/questions', methods=['POST'])
     def search_question():
         body = request.get_json()
-
-        search_term = body.get('searchTerm', None)
+        search_term = body.get('searchTerm', '').strip()
 
         try:
             if search_term:
                 selection = Question.query.order_by(Question.id).filter(
-                    Question.title.ilike("%{}%".format(search_term))
+                    Question.question.ilike("%{}%".format(search_term))
                 )
                 current_questions = paginate_questions(request, selection)
 
@@ -222,12 +222,12 @@ def create_app(test_config=None):
         category_questions = Question.query.filter(
             Question.category == category_id).all()
         current_questions = paginate_questions(request, category_questions)
-      
+
         return jsonify({
             "success": True,
             "questions": current_questions,
             "total questions": len(current_questions),
-      
+
         })
 
     """
