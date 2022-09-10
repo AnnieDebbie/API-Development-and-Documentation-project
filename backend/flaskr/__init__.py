@@ -143,14 +143,14 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
-    @app.route('/questions', methods=['POST'])
+    @app.route('/questions/new', methods=['POST'])
     def create_question():
         body = request.get_json()
 
         new_question = body.get('question', None)
         new_answer = body.get('answer', None)
-        new_category = int(body.get('category', None))
-        new_difficulty = int(body.get('difficulty', None))
+        new_category = body.get('category', None)
+        new_difficulty = body.get('difficulty', None)
 
         try:
             question = Question(question=new_question, answer=new_answer,
@@ -203,7 +203,7 @@ def create_app(test_config=None):
                     "success": True,
                     "questions": current_questions,
                     "total_questions": len(selection.all()),
-                    # "current_category": None,
+                    "current_category": None,
                 }
             )
         except:
