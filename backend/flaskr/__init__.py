@@ -14,8 +14,6 @@ QUESTIONS_PER_PAGE = 10
 
 def paginate_questions(request, selection):
     page = request.args.get("page", 1, type=int)
-    max_page = math.ceil(len(selection)/QUESTIONS_PER_PAGE)
-    page = min(max_page, page)
     start = (page - 1) * QUESTIONS_PER_PAGE
     end = start + QUESTIONS_PER_PAGE
     # or end = page * QUESTIONS_PER_PAGE
@@ -90,7 +88,7 @@ def create_app(test_config=None):
     def get_paginated_questions():
         questions = Question.query.order_by(Question.id).all()
         current_questions = paginate_questions(request, questions)
-        max_page = math.ceil(len(questions)/QUESTIONS_PER_PAGE)
+        # max_page = math.ceil(len(questions)/QUESTIONS_PER_PAGE)
         categories = Category.query.all()
         formatted_categories = {
             category.id: category.type for category in categories}
@@ -103,9 +101,9 @@ def create_app(test_config=None):
             "questions": current_questions,
             "total_questions": len(Question.query.all()),
             "categories": formatted_categories,
-            "current_category": '',
+            "current_category": None,
             "page": request.args.get('page'),
-            "max_page": max_page,
+            # # "max_page": max_page,
 
         })
 
@@ -224,13 +222,12 @@ def create_app(test_config=None):
         category_questions = Question.query.filter(
             Question.category == category_id).all()
         current_questions = paginate_questions(request, category_questions)
-        max_page = math.ceil(len(category_questions)/QUESTIONS_PER_PAGE)
-
+      
         return jsonify({
             "success": True,
             "questions": current_questions,
             "total questions": len(current_questions),
-            "max_page": max_page
+      
         })
 
     """
