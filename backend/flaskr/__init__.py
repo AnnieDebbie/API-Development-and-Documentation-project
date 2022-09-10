@@ -94,7 +94,7 @@ def create_app(test_config=None):
         categories = Category.query.all()
         formatted_categories = {
             category.id: category.type for category in categories}
-        
+
         if len(formatted_categories and current_questions) == 0:
             abort(404)
 
@@ -249,11 +249,11 @@ def create_app(test_config=None):
     def randomize_next_question():
         body = request.get_json()
         previous_questions = body.get("previous_questions")
-        quiz_category = body.get("quiz_category")
+        quiz_category = body.get("quiz_category").get("id")
         random_question = Question.query.filter(and_(
             Question.id.notin_(previous_questions),
-            quiz_category == Question.category
-        )).order_by(func.random()).first()
+            Question.category == quiz_category
+        )).order_by(func.random()).first().format()
 
         return jsonify({
             "success": True,
