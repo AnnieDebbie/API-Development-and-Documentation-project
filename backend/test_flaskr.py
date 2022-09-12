@@ -2,7 +2,7 @@ import os
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
-
+from flask import jsonify
 from flaskr import create_app
 from models import setup_db, Question, Category
 
@@ -36,6 +36,7 @@ class TriviaTestCase(unittest.TestCase):
     Write at least one test for each test for successful operation and for expected errors.
     """
 
+    # TEST GET CATEGORIES
     def test_get_all_categories(self):
         response = self.client().get('/categories')
         data = json.loads(response.data)
@@ -53,18 +54,25 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['error'], 404)
         self.assertEqual(data['message'], 'resource not found')
 
+    ####### TEST GET PAGINATED QUESTIONS ######
+
     def test_get_paginated_questions(self):
         response = self.client().get('/questions')
         data = json.loads(response.data)
 
-        self.assertEqual("success", True)
+        self.assertEqual(data["success"], True)
         self.assertIsNotNone(data["questions"])
         self.assertIsNotNone(data["total_questions"])
         self.assertIsNotNone(data["categories"])
-        self.assertEqual(data['current_category'], '')
+        self.assertIsNone(data['current_category'])
 
     def test_404_sent_requesting_beyond_valid_page(self):
         response = self.client().get('/questions')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "resource not found")
 
     def test_delete_a_question(self):
         response = self.client().get('/questions/3')
@@ -86,13 +94,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "unprocessable")
 
+    ######## TEST CREATE QUESTION##########
     def test_create_new_question(self):
-        response = self.client().post('/questions', json=self.new_question)
+        response = self.client().post('/questions/new', json=self.new_question)
         data = json.loads(response.data)
 
-        self.assertEqual("success", True)
+        self.assertEqual(data["success"], True)
         self.assertTrue(data["created"])
-
 
     def test_405_if_question_creation_not_allowed(self):
         response = self.client().post("/questions/45", json=self.new_question)
@@ -102,18 +110,27 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "method not allowed")
 
+    # TEST SEARCH QUESTION
     def test_search_question(self):
+        search_term = "Nigeria"
         response = self.client().post(
-            "/questions", json={"search_term": "Nigeria"})
+            "/questions", json={"searchTerm": search_term})
         data = json.loads(response.data)
+        selections = Question.query.order_by(Question.id).filter(
+            Question.question.ilike("%{}%".format(search_term))
+        ).all()
 
-        self.assertEqual("success", True)
+        self.assertEqual(data["success"], True)
         self.assertTrue(data["total_questions"])
-        self.assertEqual(len(data["questions"]), 1)
+        self.assertEqual(len(data["questions"]), len(selections))
+        self.assertEqual(data["questions"], [selection.format()
+                         for selection in selections])
+
+    #################################################
 
     def test_get_book_search_without_results(self):
         response = self.client().post(
-            "/questions", json={"search_term": "skrrrskrr"})
+            "/questions", json={"searchTerm": "skrrrskrr"})
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -121,18 +138,19 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["total_questions"], 0)
         self.assertEqual(len(data["questions"]), 0)
 
+    # TEST GET QUESTION BY CATEGORY
     def test_get_question_by_category(self):
         response = self.client().get(
             "/categories/2/questions")
+        print(f'would do{response}')
         data = json.loads(response.data)
         category_questions = Question.query.filter(
             Question.category == 2).all()
 
-        self.assertEqual("success", True)
-        self.assertEqual(data["category_questions"], category_questions)
-        self.assertEqual(data["total_questions"], 5)
-    
-    
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["questions"], [category_question.format()
+                         for category_question in category_questions])
+        self.assertEqual(data["total_questions"], len(category_questions))
 
 
 # Make the tests conveniently executable
