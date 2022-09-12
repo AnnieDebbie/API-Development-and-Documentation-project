@@ -18,14 +18,14 @@ def paginate_questions(request, selection):
     end = start + QUESTIONS_PER_PAGE
     # or end = page * QUESTIONS_PER_PAGE
 
-    questions = format_something(selection)
+    questions = [question.format() for question in selection]
     current_questions = questions[start:end]
 
     return current_questions
 
 
 def format_something(selection):
-    questions = format_something(selection)
+    questions = [question.format() for question in selection]
 
     return questions
 
@@ -230,7 +230,7 @@ def create_app(test_config=None):
 
         return jsonify({
             "success": True,
-            "questions":format_something(category_questions),
+            "questions": format_something(category_questions),
             "total_questions": len(category_questions),
 
         })
