@@ -18,10 +18,16 @@ def paginate_questions(request, selection):
     end = start + QUESTIONS_PER_PAGE
     # or end = page * QUESTIONS_PER_PAGE
 
-    questions = [question.format() for question in selection]
+    questions = format_something(selection)
     current_questions = questions[start:end]
 
     return current_questions
+
+
+def format_something(selection):
+    questions = format_something(selection)
+
+    return questions
 
 
 def create_app(test_config=None):
@@ -103,7 +109,6 @@ def create_app(test_config=None):
             "categories": formatted_categories,
             "current_category": None,
             "page": request.args.get('page'),
-            # # "max_page": max_page,
 
         })
 
@@ -116,22 +121,25 @@ def create_app(test_config=None):
     """
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
-        question = Question.query.filter(
-            Question.id == question_id).one_or_none()
+        try:
+            question = Question.query.filter(
+                Question.id == question_id).one_or_none()
 
-        if question is None:
-            abort(404)
+            if question is None:
+                abort(404)
 
-        question.delete()
-        questions = Question.query.order_by(Question.id).all()
-        current_questions = paginate_questions(request, questions)
+            question.delete()
+            questions = Question.query.order_by(Question.id).all()
+            current_questions = paginate_questions(request, questions)
 
-        return jsonify({
-            "success": True,
-            "deleted": question_id,
-            "current_questions": current_questions,
-            "total_questions": len(Question.query.all()),
-        })
+            return jsonify({
+                "success": True,
+                "deleted": question_id,
+                "current_questions": current_questions,
+                "total_questions": len(Question.query.all()),
+            })
+        except:
+            abort(422)
 
     """
     @TODO:
@@ -191,24 +199,22 @@ def create_app(test_config=None):
         body = request.get_json()
         search_term = body.get('searchTerm', '').strip()
 
-        try:
-            if search_term:
-                selection = Question.query.order_by(Question.id).filter(
-                    Question.question.ilike("%{}%".format(search_term))
-                )
-                current_questions = paginate_questions(request, selection)
+        if search_term:
+            questions = Question.query.order_by(Question.id).filter(
+                Question.question.ilike("%{}%".format(search_term))
+            ).all()
 
-            return jsonify(
-                {
-                    "success": True,
-                    "questions": current_questions,
-                    "total_questions": len(selection.all()),
-                    "current_category": None,
-                }
-            )
-        except:
-            abort(422)
+        else:
+            questions = Question.query.order_by(Question.id).all()
 
+        return jsonify(
+            {
+                "success": True,
+                "questions": format_something(questions),
+                "total_questions": len(questions),
+                "current_category": None,
+            }
+        )
     """
     @TODO:
     Create a GET endpoint to get questions based on category.
@@ -221,12 +227,11 @@ def create_app(test_config=None):
     def get_category_questions(category_id):
         category_questions = Question.query.filter(
             Question.category == category_id).all()
-        current_questions = paginate_questions(request, category_questions)
 
         return jsonify({
             "success": True,
-            "questions": current_questions,
-            "total questions": len(current_questions),
+            "questions":format_something(category_questions),
+            "total_questions": len(category_questions),
 
         })
 
@@ -257,7 +262,6 @@ def create_app(test_config=None):
             "question": random_question,
 
         })
-        # (and_(Question.question notin_(previous_questions)), )
     """
     @TODO:
     Create error handlers for all expected errors
