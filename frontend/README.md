@@ -357,8 +357,90 @@ Sample: curl -X DELETE http://127.0.0.1:5000/questions/43
 }
 ```
 
-- Returns: Does not return any new data
+Sample: curl http://127.0.0.1:5000/questions/new -X POST -H "Content-Type: application/json" -d '{"question":"Won so pe ki ma lo sun le is a line from which song and sang by whom", "answer":"Omo ope by Asake ft Olamide", "difficulty":5, "category":5}'
 
+- Returns: 
+{
+  "answer": "Omo ope by Asake ft Olamide", 
+  "category": 5, 
+  "created": 52, 
+  "difficulty": 5, 
+  "question": "Won so pe ki ma lo sun le is a line from which song and sang by whom", 
+  "questions": [
+    {
+      "answer": "Tom Cruise", 
+      "category": 5, 
+      "difficulty": 4, 
+      "id": 4, 
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    }, 
+    {
+      "answer": "Maya Angelou", 
+      "category": 4, 
+      "difficulty": 2, 
+      "id": 5, 
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    }, 
+    {
+      "answer": "Edward Scissorhands", 
+      "category": 5, 
+      "difficulty": 3, 
+      "id": 6, 
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }, 
+    {
+      "answer": "Muhammad Ali", 
+      "category": 4, 
+      "difficulty": 1, 
+      "id": 9, 
+      "question": "What boxer's original name is Cassius Clay?"
+    }, 
+    {
+      "answer": "Brazil", 
+      "category": 6, 
+      "difficulty": 3, 
+      "id": 10, 
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    }, 
+    {
+      "answer": "Uruguay", 
+      "category": 6, 
+      "difficulty": 4, 
+      "id": 11, 
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    }, 
+    {
+      "answer": "George Washington Carver", 
+      "category": 4, 
+      "difficulty": 2, 
+      "id": 12, 
+      "question": "Who invented Peanut Butter?"
+    }, 
+    {
+      "answer": "Lake Victoria", 
+      "category": 3, 
+      "difficulty": 2, 
+      "id": 13, 
+      "question": "What is the largest lake in Africa?"
+    }, 
+    {
+      "answer": "The Palace of Versailles", 
+      "category": 3, 
+      "difficulty": 3, 
+      "id": 14, 
+      "question": "In which royal palace would you find the Hall of Mirrors?"
+    }, 
+    {
+      "answer": "Agra", 
+      "category": 3, 
+      "difficulty": 2, 
+      "id": 15, 
+      "question": "The Taj Mahal is located in which Indian city?"
+    }
+  ], 
+  "success": true, 
+  "total_books": 45
+}
 ---
 
 `POST '/questions'`
