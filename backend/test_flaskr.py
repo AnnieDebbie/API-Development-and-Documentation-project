@@ -67,21 +67,23 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIsNone(data['current_category'])
 
     def test_404_sent_requesting_beyond_valid_page(self):
-        response = self.client().get('/questions')
+        response = self.client().get('/questions?page=6')
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "resource not found")
 
+    ####### TEST DELETE A QUESTION ######
+
     def test_delete_a_question(self):
-        response = self.client().get('/questions/3')
+        response = self.client().delete('/questions/35')
         data = json.loads(response.data)
 
-        question = Question.query.filter(Question.id == 3).one_or_none()
+        question = Question.query.filter(Question.id == 35).one_or_none()
 
         self.assertEqual(data["success"], True)
-        self.assertEqual(data["deleted"], 3)
+        self.assertEqual(data["deleted"], 35)
         self.assertIsNone(question)
         self.assertIsNotNone(data["current_questions"])
         self.assertIsNotNone(data["total_questions"])
@@ -110,7 +112,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "method not allowed")
 
-    # TEST SEARCH QUESTION
+    ####### TEST SEARCH QUESTIONS ######
     def test_search_question(self):
         search_term = "Nigeria"
         response = self.client().post(
@@ -126,8 +128,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["questions"], [selection.format()
                          for selection in selections])
 
-    #################################################
-
     def test_get_book_search_without_results(self):
         response = self.client().post(
             "/questions", json={"searchTerm": "skrrrskrr"})
@@ -142,7 +142,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_get_question_by_category(self):
         response = self.client().get(
             "/categories/2/questions")
-        print(f'would do{response}')
+
         data = json.loads(response.data)
         category_questions = Question.query.filter(
             Question.category == 2).all()
@@ -151,6 +151,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["questions"], [category_question.format()
                          for category_question in category_questions])
         self.assertEqual(data["total_questions"], len(category_questions))
+
+    def test_no_question_by_category(self):
+        response = self.client().get(
+            "/categories/9/questions")
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "resource not found")
 
 
 # Make the tests conveniently executable
