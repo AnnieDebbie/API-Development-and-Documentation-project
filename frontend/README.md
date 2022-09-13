@@ -92,18 +92,9 @@ You can optionally update this game play to increase the number of questions or 
 - Request Arguments: `page` - integer
 - Returns: An object with 10 paginated questions, total questions, object including all categories, and current category string
 
+Sample: curl http://127.0.0.1:5000/questions?page=2
 ```json
 {
-  "questions": [
-    {
-      "id": 1,
-      "question": "This is a question",
-      "answer": "This is an answer",
-      "difficulty": 5,
-      "category": 2
-    }
-  ],
-  "totalQuestions": 100,
   "categories": {
     "1": "Science",
     "2": "Art",
@@ -112,7 +103,82 @@ You can optionally update this game play to increase the number of questions or 
     "5": "Entertainment",
     "6": "Sports"
   },
-  "currentCategory": "History"
+  "current_category": null,
+  "page": "2",
+  "questions": [
+    {
+      "answer": "Escher",
+      "category": 2,
+      "difficulty": 1,
+      "id": 16,
+      "question": "Which Dutch graphic artist\u2013initials M C was a creator of optical illusions?"
+    },
+    {
+      "answer": "One",
+      "category": 2,
+      "difficulty": 4,
+      "id": 18,
+      "question": "How many paintings did Van Gogh sell in his lifetime?"
+    },
+    {
+      "answer": "Jackson Pollock",
+      "category": 2,
+      "difficulty": 2,
+      "id": 19,
+      "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+    },
+    {
+      "answer": "The Liver",
+      "category": 1,
+      "difficulty": 4,
+      "id": 20,
+      "question": "What is the heaviest organ in the human body?"
+    },
+    {
+      "answer": "Alexander Fleming",
+      "category": 1,
+      "difficulty": 3,
+      "id": 21,
+      "question": "Who discovered penicillin?"
+    },
+    {
+      "answer": "Blood",
+      "category": 1,
+      "difficulty": 4,
+      "id": 22,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    },
+    {
+      "answer": "Scarab",
+      "category": 4,
+      "difficulty": 4,
+      "id": 23,
+      "question": "Which dung beetle was worshipped by the ancient Egyptians?"
+    },
+    {
+      "answer": "A home for lost boys",
+      "category": 5,
+      "difficulty": 4,
+      "id": 24,
+      "question": "What is neverland"
+    },
+    {
+      "answer": "He is slowly  poisoned by his wife till he dies",
+      "category": 5,
+      "difficulty": 5,
+      "id": 25,
+      "question": "What happens to Kambili's dad in Purple hibiscus"
+    },
+    {
+      "answer": null,
+      "category": null,
+      "difficulty": null,
+      "id": 26,
+      "question": null
+    }
+  ],
+  "success": true,
+  "total_questions": 43
 }
 ```
 
