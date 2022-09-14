@@ -36,7 +36,8 @@ def create_app(test_config=None):
     setup_db(app)
 
     """
-    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+    @TODO: Set up CORS. Allow '*' for origins. 
+    Delete the sample route after completing the TODOs
 
     """
     cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -100,6 +101,7 @@ def create_app(test_config=None):
             category.id: category.type for category in categories}
 
         if len(current_questions) == 0:
+            print(f'hollas {current_questions}')
             abort(404)
 
         return jsonify({
@@ -210,7 +212,7 @@ def create_app(test_config=None):
         return jsonify(
             {
                 "success": True,
-                "questions": format_something(questions),
+                "questions": [question.format() for question in questions],
                 "total_questions": len(questions),
                 "current_category": None,
             }
@@ -227,6 +229,9 @@ def create_app(test_config=None):
     def get_category_questions(category_id):
         category_questions = Question.query.filter(
             Question.category == category_id).all()
+
+        if len(category_questions) == 0:
+            abort(404)
 
         return jsonify({
             "success": True,
