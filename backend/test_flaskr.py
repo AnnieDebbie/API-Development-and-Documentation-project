@@ -33,7 +33,8 @@ class TriviaTestCase(unittest.TestCase):
 
     """
     TODO
-    Write at least one test for each test for successful operation and for expected errors.
+    Write at least one test for each test for successful operation
+    and for expected errors.
     """
 
     # TEST GET CATEGORIES
@@ -54,7 +55,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['error'], 404)
         self.assertEqual(data['message'], 'resource not found')
 
-    ####### TEST GET PAGINATED QUESTIONS ######
+    # TEST GET PAGINATED QUESTIONS
 
     def test_get_paginated_questions(self):
         response = self.client().get('/questions')
@@ -74,7 +75,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "resource not found")
 
-    ####### TEST DELETE A QUESTION ######
+    # TEST DELETE A QUESTION
 
     def test_delete_a_question(self):
         response = self.client().delete('/questions/35')
@@ -96,7 +97,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "unprocessable")
 
-    ######## TEST CREATE QUESTION##########
+    # TEST CREATE QUESTION
     def test_create_new_question(self):
         response = self.client().post('/questions/new', json=self.new_question)
         data = json.loads(response.data)
@@ -112,7 +113,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "method not allowed")
 
-    ####### TEST SEARCH QUESTIONS ######
+    # TEST SEARCH QUESTIONS
     def test_search_question(self):
         search_term = "Nigeria"
         response = self.client().post(
