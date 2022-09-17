@@ -65,7 +65,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIsNotNone(data["questions"])
         self.assertIsNotNone(data["total_questions"])
         self.assertIsNotNone(data["categories"])
-        self.assertIsNone(data['current_category'])
 
     def test_404_sent_requesting_beyond_valid_page(self):
         response = self.client().get('/questions?page=6')
@@ -78,13 +77,19 @@ class TriviaTestCase(unittest.TestCase):
     # TEST DELETE A QUESTION
 
     def test_delete_a_question(self):
-        response = self.client().delete('/questions/35')
+        mock_question = Question(question="", answer="",
+                                 category=None, difficulty=None)
+        mock_question.insert()
+        id = mock_question.id
+
+        response = self.client().delete(f'/questions/{id}')
         data = json.loads(response.data)
 
-        question = Question.query.filter(Question.id == 35).one_or_none()
+        question = Question.query.filter(
+            Question.id == id).one_or_none()
 
         self.assertEqual(data["success"], True)
-        self.assertEqual(data["deleted"], 35)
+        self.assertEqual(data["deleted"], id)
         self.assertIsNone(question)
         self.assertIsNotNone(data["current_questions"])
         self.assertIsNotNone(data["total_questions"])
@@ -161,6 +166,28 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "resource not found")
+
+    # TEST RANDOMIZE NEXT QUESTION
+    def test_randomize_next_question(self):
+        previous_questions = [1, 4, 20, 15]
+        response = self.client().post('/quizzes', json={"previous_questions": previous_questions,
+                                                        "quiz_category": {"id": 0}
+                                                        })
+        data = json.loads(response.data)
+
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["question"]["id"] not in previous_questions)
+
+    def test_randomize_next_question_failed(self):
+        previous_questions = [1, 4, 20, 15]
+        response = self.client().post('/quizzes', json={"previous_questions": previous_questions,
+                                                        "quiz_category": 0
+                                                        })
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "internal server error")
 
 
 # Make the tests conveniently executable
