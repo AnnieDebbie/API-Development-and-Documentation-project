@@ -36,7 +36,7 @@ def create_app(test_config=None):
     setup_db(app)
 
     """
-    @TODO: Set up CORS. Allow '*' for origins. 
+    @TODO: Set up CORS. Allow '*' for origins.
     Delete the sample route after completing the TODOs
 
     """
@@ -87,7 +87,8 @@ def create_app(test_config=None):
 
     TEST: At this point, when you start the application
     you should see questions and categories generated,
-    ten questions per page and pagination at the bottom of the screen for three pages.
+    ten questions per page and pagination
+    at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
 
@@ -120,7 +121,8 @@ def create_app(test_config=None):
     @TODO:
     Create an endpoint to DELETE question using a question ID.
 
-    TEST: When you click the trash icon next to a question, the question will be removed.
+    TEST: When you click the trash icon next to a question,
+    the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
@@ -142,7 +144,7 @@ def create_app(test_config=None):
                 "current_questions": current_questions,
                 "total_questions": len(Question.query.all()),
             })
-        except:
+        except Exception:
             abort(422)
 
     """
@@ -152,7 +154,8 @@ def create_app(test_config=None):
     category, and difficulty score.
 
     TEST: When you submit a question on the "Add" tab,
-    the form will clear and the question will appear at the end of the last page
+    the form will clear and the question
+    will appear at the end of the last page
     of the questions list in the "List" tab.
     """
     @app.route('/questions/new', methods=['POST'])
@@ -165,8 +168,10 @@ def create_app(test_config=None):
         new_difficulty = body.get('difficulty', None)
 
         try:
-            question = Question(question=new_question, answer=new_answer,
-                                category=new_category, difficulty=new_difficulty)
+            question = Question(question=new_question,
+                                answer=new_answer,
+                                category=new_category,
+                                difficulty=new_difficulty)
             question.insert()
 
             questions = Question.query.order_by(Question.id).all()
@@ -184,7 +189,7 @@ def create_app(test_config=None):
                     "total_books": len(Question.query.all()),
                 }
             )
-        except:
+        except Exception:
             abort(422)
 
     """
@@ -276,7 +281,7 @@ def create_app(test_config=None):
                 "question": random_question,
 
             })
-        except:
+        except Exception:
             abort(500)
     """
     @TODO:
