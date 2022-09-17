@@ -6,12 +6,15 @@ from urllib import response
 from flask_sqlalchemy import SQLAlchemy
 from flask import jsonify
 from flaskr import create_app
-from models import setup_db, Question, Category
+from models import setup_db, Question
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DB_HOST = os.getenv('DB_HOST', '127.0.0.1:5432')
 DB_USER = os.getenv('DB_USER', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'postgres')
-DB_NAME = os.getenv('DB_NAME', 'trivia_test')
+DB_NAME = os.getenv('DB_TEST_NAME', 'trivia_test')
 DB_PATH = 'postgresql://{}:{}@{}/{}'.format(
     DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
 
@@ -76,7 +79,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIsNotNone(data["categories"])
 
     def test_404_sent_requesting_beyond_valid_page(self):
-        response = self.client().get('/questions?page=6')
+        response = self.client().get('/questions?page=7')
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 404)
