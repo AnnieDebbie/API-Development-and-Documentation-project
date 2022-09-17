@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import $ from 'jquery';
-import '../stylesheets/QuizView.css';
+import React, { Component } from "react";
+import $ from "jquery";
+import "../stylesheets/QuizView.css";
 
 const questionsPerPlay = 5;
 
@@ -14,7 +14,7 @@ class QuizView extends Component {
       categories: {},
       numCorrect: 0,
       currentQuestion: {},
-      guess: '',
+      guess: "",
       forceEnd: false,
     };
   }
