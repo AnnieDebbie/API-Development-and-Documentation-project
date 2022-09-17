@@ -152,6 +152,7 @@ You can optionally update this game play to increase the number of questions or 
 
 - Sends a post request in order to get the next question
 - Request Body:
+
 ```json
 {
     'previous_questions': [1, 4, 20, 15]
@@ -175,7 +176,7 @@ You can optionally update this game play to increase the number of questions or 
 
 ---
 
-`POST '/questions'`
+`POST '/questions/new'`
 
 - Sends a post request in order to add a new question
 - Request Body:
@@ -204,8 +205,7 @@ You can optionally update this game play to increase the number of questions or 
 
 - Returns: any array of questions, a number of totalQuestions that met the search term and the current category string
 
-
-``` json
+```json
 {
   "questions": [
     {
