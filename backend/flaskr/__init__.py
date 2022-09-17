@@ -95,21 +95,23 @@ def create_app(test_config=None):
     def get_paginated_questions():
         questions = Question.query.order_by(Question.id).all()
         current_questions = paginate_questions(request, questions)
-        # max_page = math.ceil(len(questions)/QUESTIONS_PER_PAGE)
         categories = Category.query.all()
         formatted_categories = {
             category.id: category.type for category in categories}
 
         if len(current_questions) == 0:
-            print(f'hollas {current_questions}')
             abort(404)
+
+        current_category = set()
+        for question in current_questions:
+            current_category.add(formatted_categories[question["category"]])
 
         return jsonify({
             "success": True,
             "questions": current_questions,
             "total_questions": len(Question.query.all()),
             "categories": formatted_categories,
-            "current_category": None,
+            "current_category": list(current_category),
             "page": request.args.get('page'),
 
         })
@@ -254,19 +256,28 @@ def create_app(test_config=None):
 
     @app.route('/quizzes', methods=['POST'])
     def randomize_next_question():
-        body = request.get_json()
-        previous_questions = body.get("previous_questions")
-        quiz_category = body.get("quiz_category").get("id")
-        random_question = Question.query.filter(and_(
-            Question.id.notin_(previous_questions),
-            Question.category == quiz_category
-        )).order_by(func.random()).first().format()
+        try:
+            body = request.get_json()
+            previous_questions = body.get("previous_questions")
+            quiz_category = body.get("quiz_category").get("id", '')
 
-        return jsonify({
-            "success": True,
-            "question": random_question,
+            if int(quiz_category) > 0:
+                random_question = Question.query.filter(and_(
+                    Question.id.notin_(previous_questions),
+                    Question.category == quiz_category
+                )).order_by(func.random()).first().format()
+            else:
+                random_question = Question.query.filter(
+                    Question.id.notin_(previous_questions)
+                ).order_by(func.random()).first().format()
 
-        })
+            return jsonify({
+                "success": True,
+                "question": random_question,
+
+            })
+        except:
+            abort(500)
     """
     @TODO:
     Create error handlers for all expected errors
@@ -303,5 +314,13 @@ def create_app(test_config=None):
             "error": 422,
             "message": "unprocessable",
         }), 422
+
+    @app.errorhandler(500)
+    def server_error(error):
+        return jsonify({
+            "success": False,
+            "error": 500,
+            "message": "internal server error",
+        }), 500
 
     return app
