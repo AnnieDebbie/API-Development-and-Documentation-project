@@ -6,7 +6,7 @@
 
 1. **Python 3.7** - Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
 
-2. **Virtual Environment** - We recommend working within a virtual environment whenever using Python for projects. This keeps your dependencies for each project separate and organized. Instructions for setting up a virual environment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+2. **Virtual Environment** - I use a virtual environment to keep dependencies for each project separate and organized. Instructions for setting up a virual environment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 
 3. **PIP Dependencies** - Once your virtual environment is setup and running, install the required dependencies by navigating to the `/backend` directory and running:
 
@@ -48,14 +48,7 @@ flask run --reload
 
 The `--reload` flag will detect file changes and restart the server automatically.
 
-## To Do Tasks
-
-These are the files you'd want to edit in the backend:
-
-1. `backend/flaskr/__init__.py`
-2. `backend/test_flaskr.py`
-
-### Documentation
+### API Documentation
 
 `GET '/api/v1.0/categories'`
 
